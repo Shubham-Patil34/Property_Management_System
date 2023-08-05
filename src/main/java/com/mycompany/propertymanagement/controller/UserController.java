@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -21,7 +22,7 @@ public class UserController {
 
     //http://localhost:8080/api/v2/register-user
     @PostMapping("/register-user")
-    public ResponseEntity<String> registerUser(@RequestBody UserDTO userDTO){
+    public ResponseEntity<String> registerUser(@Valid @RequestBody UserDTO userDTO){
         userDTO = userService.registerUser(userDTO);
 
         String ack = userDTO.getOwnerEmail() + " is registered successfully.";
@@ -31,7 +32,7 @@ public class UserController {
     }
 
     @PostMapping("/login-user")
-    public ResponseEntity<String> loginUser(@RequestBody UserDTO userDTO){
+    public ResponseEntity<String> loginUser(@Valid @RequestBody UserDTO userDTO){
         if(userService.loginUser(userDTO))
             return new ResponseEntity<>(userDTO.getOwnerEmail()+" is logged in successfully.", HttpStatus.OK);
         return new ResponseEntity<>(" Invalid User.", HttpStatus.BAD_REQUEST);

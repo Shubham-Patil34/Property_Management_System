@@ -23,8 +23,10 @@ public class UserController {
     @PostMapping("/register-user")
     public ResponseEntity<String> registerUser(@RequestBody UserDTO userDTO){
         userDTO = userService.registerUser(userDTO);
-        String ack = userDTO.getOwnerEmail() +" is registered successfully.";
+
+        String ack = userDTO.getOwnerEmail() + " is registered successfully.";
         ResponseEntity<String> responseEntity = new ResponseEntity<>(ack, HttpStatus.CREATED);
+
         return responseEntity;
     }
 

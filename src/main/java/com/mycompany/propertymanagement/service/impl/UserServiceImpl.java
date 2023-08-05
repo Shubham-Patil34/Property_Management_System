@@ -28,13 +28,25 @@ public class UserServiceImpl implements UserService {
     UserConverter userConverter;
     @Override
     public UserDTO registerUser(UserDTO userDTO) {
-        UserEntity ue = userConverter.convertDTOtoEntity(userDTO);
+        Optional<UserEntity> optEnt = userRepository.findByOwnerEmail(userDTO.getOwnerEmail());
 
-        ue = userRepository.save(ue);
+        // Check if user is already registered
+        if(optEnt.isPresent()){
+            List<ErrorModel> errorModels = new ArrayList<>();
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setCode("USER_ALREADY_EXISTS");
+            errorModel.setMessage("Account with "+ userDTO.getOwnerEmail() + " already exists...!");
+            errorModels.add(errorModel);
+            throw new BusinessException(errorModels);
+        }else {
 
-        userDTO = userConverter.convertEntityToDTO(ue);
+            UserEntity ue = userConverter.convertDTOtoEntity(userDTO);
 
+            ue = userRepository.save(ue);
 
+            userDTO = userConverter.convertEntityToDTO(ue);
+
+        }
         return userDTO;
     }
 

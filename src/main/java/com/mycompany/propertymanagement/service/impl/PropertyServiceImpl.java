@@ -63,17 +63,37 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
+    public List<PropertyDTO> getAllPropertiesForUser(Long userId) {
+        List<PropertyEntity> listOfPropertyEntity = propertyRepository.findByUserEntityId(userId);
+//        List<PropertyEntity> listOfPropertyEntity = new ArrayList<>();
+//        for (Optional<PropertyEntity> pe : optEntList) {
+//            listOfPropertyEntity.add(pe.get());
+//        }
+
+        List<PropertyDTO> listOfPropertyDTO = new ArrayList<>();
+
+        for (PropertyEntity propEntity: listOfPropertyEntity){
+            PropertyDTO propertyDTO = propertyConverter.convertEntityToDTO(propEntity);
+            listOfPropertyDTO.add(propertyDTO);
+        }
+        return listOfPropertyDTO;
+    }
+
+    @Override
     public PropertyDTO updateProperty(PropertyDTO propertyDTO, Long propertyId) {
         Optional<PropertyEntity>  optEnt = propertyRepository.findById(propertyId);
+        Optional<UserEntity> optEntUser = userRepository.findById(propertyDTO.getUserId());
 
-        if(optEnt.isPresent()){
+        if(optEnt.isPresent() && optEntUser.isPresent()){
             PropertyEntity pe = optEnt.get();
             pe.setTitle(propertyDTO.getTitle());
             pe.setAddress(propertyDTO.getAddress());
-            pe.setOwnerEmail(propertyDTO.getOwnerEmail());
-            pe.setOwnerName(propertyDTO.getOwnerName());
+//            pe.setOwnerEmail(propertyDTO.getOwnerEmail());
+//            pe.setOwnerName(propertyDTO.getOwnerName());
             pe.setPrice(propertyDTO.getPrice());
             pe.setDescription(propertyDTO.getDescription());
+
+            pe.setUserEntity(optEntUser.get());
 
             pe = propertyRepository.save(pe);
 

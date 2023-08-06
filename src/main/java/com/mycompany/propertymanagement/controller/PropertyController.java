@@ -40,9 +40,19 @@ public class PropertyController {
 
     @GetMapping("/properties")     // SAME END point but different type non issue
     public ResponseEntity<List<PropertyDTO>> getAllProperties(){
-        System.out.println(dbUrl);
-        System.out.println(dummyValue);
+//        System.out.println(dbUrl);
+//        System.out.println(dummyValue);
         List<PropertyDTO> propertyList = propertyService.getAllProperties();
+        ResponseEntity<List<PropertyDTO>> responseEntity= new ResponseEntity<List<PropertyDTO>>(propertyList, HttpStatus.OK);
+
+        return  responseEntity;
+    }
+
+    @GetMapping("/properties/users/{userId}")
+    public ResponseEntity<List<PropertyDTO>> getAllPropertiesForUser(@PathVariable Long userId){
+//        System.out.println(dbUrl);
+//        System.out.println(dummyValue);
+        List<PropertyDTO> propertyList = propertyService.getAllPropertiesForUser(userId);
         ResponseEntity<List<PropertyDTO>> responseEntity= new ResponseEntity<List<PropertyDTO>>(propertyList, HttpStatus.OK);
 
         return  responseEntity;

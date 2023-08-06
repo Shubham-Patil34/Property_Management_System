@@ -3,7 +3,11 @@ package com.mycompany.propertymanagement.service.impl;
 import com.mycompany.propertymanagement.converter.PropertyConverter;
 import com.mycompany.propertymanagement.dto.PropertyDTO;
 import com.mycompany.propertymanagement.entity.PropertyEntity;
+import com.mycompany.propertymanagement.entity.UserEntity;
+import com.mycompany.propertymanagement.exceptioin.BusinessException;
+import com.mycompany.propertymanagement.exceptioin.ErrorModel;
 import com.mycompany.propertymanagement.repository.PropertyRepository;
+import com.mycompany.propertymanagement.repository.UserRepository;
 import com.mycompany.propertymanagement.service.PropertyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,17 +23,31 @@ public class PropertyServiceImpl implements PropertyService {
 
     @Autowired
     PropertyConverter propertyConverter;
+
+    @Autowired
+    UserRepository userRepository;
     @Override
     public PropertyDTO saveProperty(PropertyDTO propertyDTO) { // factory design pattern
 
-        PropertyEntity pe = propertyConverter.convertDTOtoEntity(propertyDTO);
+        Optional<UserEntity> optEnt = userRepository.findById(propertyDTO.getUserId());
 
-        pe = propertyRepository.save(pe);
+        if (optEnt.isPresent()){
+            PropertyEntity pe = propertyConverter.convertDTOtoEntity(propertyDTO);
+            pe.setUserEntity(optEnt.get());
+            pe = propertyRepository.save(pe);
+            propertyDTO = propertyConverter.convertEntityToDTO(pe);
 
-        propertyDTO = propertyConverter.convertEntityToDTO(pe);
+
+            return propertyDTO;
+        }
+        List<ErrorModel> errorModels = new ArrayList<>();
+        ErrorModel errorModel = new ErrorModel();
+        errorModel.setCode("USER_DOES_NOT_EXISTS");
+        errorModel.setMessage("Not able to find the user, please do registration first.");
+        errorModels.add(errorModel);
+        throw new BusinessException(errorModels);
 
 
-        return propertyDTO;
     }
 
     @Override

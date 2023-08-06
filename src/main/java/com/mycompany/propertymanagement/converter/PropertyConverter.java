@@ -16,6 +16,7 @@ public class PropertyConverter {
         pe.setPrice(propertyDTO.getPrice());
         pe.setDescription(propertyDTO.getDescription());
 
+
         return pe;
     }
     public PropertyDTO convertEntityToDTO( PropertyEntity propertyEntity){
